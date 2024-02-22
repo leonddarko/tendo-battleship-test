@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tendo - BattleShip Test</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      rel="stylesheet"
+    />
+
+    <script
+      src="https://kit.fontawesome.com/dcd356c426.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <link rel="icon" type="image/x-icon" href="/tendo.png" />
+
+    <style>
+      .container {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .count-container {
+        width: 30%;
+        padding: 24px 16px;
+        text-align: center;
+        background-color: #f1f1f1;
+        border-radius: 40px 40px 80px 80px;
+      }
+
+      @media screen and (max-width: 600px) {
+        .count-container {
+          width: 60%;
+        }
+      }
+
+      .count-container h2 {
+        color: #0a427d;
+        font-weight: 700;
+      }
+
+      .count-container p {
+        color: #222222;
+        /* font-weight: bolder; */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="count-container">
+        <h2>Battleship Test</h2>
+        <p><i class="fas fa-fire-alt"></i> Hits: <span id="hitcount"></span></p>
+        <p><i class="fas fa-water"></i> Sinks: <span id="sinkcount"></span></p>
+      </div>
+    </div>
+
+    <script>
+      function countHitsAndSinks(ships, playerGuesses) {
+        let hits = 0;
+        let sinks = 0;
+
+        // Create a map to keep track of the ships and their hit count
+        let shipMap = new Map();
+        for (let ship of ships) {
+          shipMap.set(
+            ship,
+            Array(ship[1].charCodeAt(0) - ship[0].charCodeAt(0) + 1).fill(0)
+          ); // Initialize hit count for each ship
+        }
+
+        // Check each guess against the ships
+        for (let guess of playerGuesses) {
+          for (let [ship, hitCounts] of shipMap) {
+            let [start, end] = ship;
+            let row = guess.charAt(0);
+            let col = parseInt(guess.substring(1));
+            let startRow = start.charAt(0);
+            let endRow = end.charAt(0);
+            let startCol = parseInt(start.substring(1));
+            let endCol = parseInt(end.substring(1));
+
+            if (
+              row >= startRow &&
+              row <= endRow &&
+              col >= startCol &&
+              col <= endCol
+            ) {
+              // Check if guess is within ship range
+              let index = row.charCodeAt(0) - startRow.charCodeAt(0);
+              hitCounts[index]++;
+              hits++;
+              if (
+                hitCounts[index] ===
+                end.charCodeAt(0) - start.charCodeAt(0) + 1
+              ) {
+                // Check if the ship is sunk
+                sinks++;
+              }
+            }
+          }
+        }
+
+        return { hits, sinks };
+      }
+
+      let ships = [
+        ["E1", "E3"],
+        ["A4", "C4"],
+      ];
+
+      let playerGuesses = ["A4", "B4", "C4", "D3", "D2", "E1"];
+      let result = countHitsAndSinks(ships, playerGuesses);
+      console.log("Hits:", result.hits);
+      console.log("Sinks:", result.sinks);
+
+      document.getElementById("hitcount").innerHTML = result.hits;
+      document.getElementById("sinkcount").innerHTML = result.sinks;
+    </script>
+  </body>
+</html>
